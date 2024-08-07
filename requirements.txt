@@ -1,0 +1,9 @@
+matplotlib
+numpy
+tqdm
+opencv-python
+pandas
+tensorflow
+scikit-image
+
+-e .
