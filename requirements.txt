@@ -5,5 +5,8 @@ opencv-python
 pandas
 tensorflow
 scikit-image
-
+scikit-learn
+torch
+torchvision
+ 
 -e .
