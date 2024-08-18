@@ -1,0 +1,29 @@
+artifacts_root: artifacts
+
+data_ingestion:
+  images_dir: ['D:\data\Grape___Black_rot']
+  root_dir: "artifacts/data_ingestion/train.npy"
+  train_data_path: "artifacts/data_ingestion/train.npy"
+  test_data_path: "artifacts/data_ingestion/test.npy"
+  raw_data_path: "artifacts/data_ingestion/raw.npy"
+
+data_preprocessing:
+  root_dir : "artifacts/data_preprocessing"
+  x_train_noisy_path: "artifacts/data_preprocessing/train_noisy.npy"
+  x_test_noisy_path: "artifacts/data_preprocessing/test_noisy.npy"
+
+base_model:
+  root_dir: "artifacts/base_model"
+  base_model_path: "artifacts/base_model/model.keras"
+  updated_base_model_path : "artifacts/base_model/model.keras"
+
+
+  
+  
+
+
+
+
+
+
+
