@@ -8,7 +8,7 @@ class DataIngestionConfig:
     Configuration class for data ingestion.
 
     Attributes:
-        images_dir (list[Path]): List of paths to directories containing images.
+        images_dir (list()): List of paths to directories containing images.
         root_dir (Path): The root directory for storing data.
         raw_data_path (Path): Path to store raw image data in numpy format.
         train_data_path (Path): Path to store the training data.
@@ -17,9 +17,8 @@ class DataIngestionConfig:
         test_split (float): The proportion of the dataset to include in the test split.
         random_state (int): Random seed for reproducibility.
     """
-    images_dir: list(Path)
+    images_dir: list
     root_dir : Path
-    raw_data_path: Path
     train_data_path: Path
     test_data_path: Path
     im_size: tuple
@@ -64,7 +63,7 @@ class BaseModelConfig:
     base_model_path: Path
     updated_base_model_path : Path
     base_learning_rate : int
-    im_size : tuple
+    input_shape: tuple
 
 
 @dataclass(frozen=True)

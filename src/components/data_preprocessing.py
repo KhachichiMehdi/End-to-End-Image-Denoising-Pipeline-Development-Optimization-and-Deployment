@@ -18,8 +18,9 @@ class DataPreprocessing:
 
     Attributes:
         config (DataPreprocessingConfig): Configuration for the data preprocessing process
-    config: DataPreprocessingConfig
     """
+    config: DataPreprocessingConfig
+ 
 
     def __post_init__(self):
         """
@@ -28,6 +29,9 @@ class DataPreprocessing:
         This method is called automatically after the class is initialized and
         it triggers the data normalization and noise addition processes.
         """
+        self.train_data =self.config.train_data
+        self.test_data=self.config.test_data
+
         self._normalize_data()
         self._add_noise()
 
@@ -43,8 +47,8 @@ class DataPreprocessing:
         """
         try:
             logging.info("Normalizing the data by scaling it to the range [0, 1].")
-            self.config.train_data = self.config.train_data.astype("float32") / 255.0
-            self.config.test_data = self.config.test_data.astype("float32") / 255.0
+            self.train_data = self.train_data.astype("float32") / 255.0
+            self.test_data = self.test_data.astype("float32") / 255.0
             logging.info(f"Data normalization completed. Training data shape: {self.config.train_data.shape}, Testing data shape: {self.config.test_data.shape}")
         except Exception as e:
             logging.error(f"An error occurred while normalizing the data: {e}")
@@ -63,12 +67,13 @@ class DataPreprocessing:
     
         try:
             logging.info(f"Adding noise to the data with a noise factor of {self.config.noise_factor}.")
-            x_train_noisy = self.config.train_data + self.config.noise_factor * tf.random.normal(shape=self.config.train_data.shape)
-            x_test_noisy = self.config.test_data + self.config.noise_factor * tf.random.normal(shape=self.config.test_data.shape)
-            
+            x_train_noisy = self.train_data + self.config.noise_factor * tf.random.normal(shape=self.config.train_data.shape)
+            x_test_noisy = self.test_data + self.config.noise_factor * tf.random.normal(shape=self.config.test_data.shape)
             # Clipping to maintain pixel values in the range [0, 1]
             x_train_noisy = tf.clip_by_value(x_train_noisy, clip_value_min=0.0, clip_value_max=1.0)
             x_test_noisy = tf.clip_by_value(x_test_noisy, clip_value_min=0.0, clip_value_max=1.0)
+
+
             
             logging.info("Noise added and data clipped to the range [0, 1].")
             

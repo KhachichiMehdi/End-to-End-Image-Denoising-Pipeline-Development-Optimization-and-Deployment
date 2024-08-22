@@ -16,35 +16,34 @@ from src.utils.exception import CustomException
 
 @ensure_annotations
 def read_yaml(path_to_yaml: Path) -> ConfigBox:
-
-    """reads yaml file and returns
+    """
+    Reads yaml file and returns the content as a ConfigBox.
 
     Args:
-        path_to_yaml (str): path like input
+        path_to_yaml (Path): path-like input.
 
     Raises:
-        ValueError: if yaml file is empty
+        ValueError: if yaml file is empty.
         CustomException: If any other error occurs during loading.
 
     Returns:
-        ConfigBox: Loaded content as a ConfigBox object
-
+        ConfigBox: Loaded content as a ConfigBox object.
     """
-
-
     try:
         with open(path_to_yaml) as yaml_file:
             content = yaml.safe_load(yaml_file)
             if not content:
                 raise BoxValueError("YAML file is empty")
             logging.info(f"YAML file loaded successfully from {path_to_yaml}")
+            logging.info(ConfigBox(content))
             return ConfigBox(content)
-    except BoxValueError:
+    except BoxValueError as e:
         logging.error(f"YAML file is empty: {path_to_yaml}")
-        raise CustomException(e, sys)
+        raise CustomException(e, sys) from e
     except Exception as e:
         logging.error(f"Error occurred while loading YAML file: {path_to_yaml}")
-        CustomException(e, sys)
+        raise CustomException(e, sys) from e
+
 
 @ensure_annotations
 def create_directories(paths: list, verbose=True):
@@ -72,57 +71,42 @@ def create_directories(paths: list, verbose=True):
 
 
 @ensure_annotations
-def read_images_from_directory(path_list: list, im_size: tuple) -> tuple:
-    """
-    Reads images from directories, processes them, and returns the images, labels, and label dictionary.
-
-    Args:
-        path_list (list): List of paths to directories containing images.
-        im_size (tuple): Desired image size (width, height).
-
-    Returns:
-        tuple: Tuple containing:
-            - X (np.ndarray): Array of processed images.
-            - y (np.ndarray): Array of one-hot encoded labels.
-            - tag2idx (dict): Dictionary mapping label names to indices.
-
-    Raises:
-        CustomException: If any error occurs during the image processing.
-    """
+def read_data(path_list: list, im_size: tuple) -> tuple:
+    
     try:
         X = []
         y = []
+
+        # Extract the file-names of the datasets we read and create a label dictionary.
         tag2idx = {tag.split(os.path.sep)[-1]: i for i, tag in enumerate(path_list)}
         logging.info(f"Label dictionary created: {tag2idx}")
 
         for path in path_list:
-            for im_file in tqdm(glob(os.path.join(path, "*/*"))):
+            for im_file in tqdm(glob(path + "*/*")):  # Read all files in path
                 try:
+                    # os.path.sep is OS agnostic (either '/' or '\'),[-2] to grab folder name.
                     label = im_file.split(os.path.sep)[-2]
                     im = cv2.imread(im_file, cv2.IMREAD_COLOR)
                     if im is None:
                         logging.warning(f"Failed to read image: {im_file}")
                         continue
-
+                    # By default OpenCV reads with BGR format, convert back to RGB.
                     im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+                    # Resize to appropriate dimensions. You can try different interpolation methods.
                     im = cv2.resize(im, im_size, interpolation=cv2.INTER_AREA)
-
                     X.append(im)
-                    y.append(tag2idx[label])
+                    y.append(tag2idx[label])  # Append the label name to y
                 except Exception as e:
+                    # In case annotations or metadata are found
                     logging.error(f"Error processing file {im_file}: {e}")
 
-        X = np.array(X)
+        X = np.array(X)  # Convert list to numpy array.
         y = np.eye(len(np.unique(y)))[y].astype(np.uint8)
-
-        logging.info(f"Loaded data shape: {X.shape}")
-        logging.info(f"Labels shape: {y.shape}")
 
         return X, y, tag2idx
     except Exception as e:
         logging.error(f"An error occurred while reading images from directories: {e}")
         raise CustomException(e, sys)
-
 
 
 

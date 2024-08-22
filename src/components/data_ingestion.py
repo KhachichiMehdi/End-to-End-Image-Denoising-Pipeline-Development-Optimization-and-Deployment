@@ -1,15 +1,13 @@
-import warnings
-warnings.filterwarnings("ignore")
-import numpy as np
+import os
 import sys
-import random
-from sklearn.model_selection import train_test_split
+import numpy as np
+from dataclasses import dataclass
 from pathlib import Path
-from src.entity.config_entity import DataIngestionConfig 
+from sklearn.model_selection import train_test_split
+from src.entity.config_entity import DataIngestionConfig
 from src.utils.logger import logging
 from src.utils.exception import CustomException
-from src.utils.common import read_images_from_directory
-from dataclasses import dataclass
+from src.utils.common import read_data
 
 
 @dataclass
@@ -25,11 +23,28 @@ class DataIngestion:
         config (DataIngestionConfig): Configuration for the data ingestion process.
     """
 
+    config: DataIngestionConfig
 
-    def __init__(self, config: DataIngestionConfig) -> None:
-        self.config = config
+    def save_data(self, path: Path, data: np.ndarray, data_desc: str) -> None:
+        """
+        Save numpy array data to the specified path.
 
-    def initiate_data_ingestion(self)  -> None :
+        Args:
+            path (Path): Path to save the numpy file.
+            data (np.ndarray): Data to be saved.
+            data_desc (str): Description of the data being saved.
+
+        Raises:
+            CustomException: If the file cannot be saved due to permission errors.
+        """
+        try:
+            np.save(path, data)
+            logging.info(f"{data_desc} saved successfully at {path}")
+        except Exception as e:
+            logging.error(f"An error occurred while saving {data_desc}: {e}")
+            raise CustomException(e, sys)
+
+    def initiate_data_ingestion(self) -> None:
         """
         Executes the data ingestion process.
 
@@ -39,37 +54,25 @@ class DataIngestion:
         Raises:
             CustomException: If any errors occur during the data ingestion process.
         """
-
         logging.info("Entered the data ingestion method or component")
-    
-        
+
         try:
             # Step 1: Read images from the directory
             logging.info("Reading Images from directory")
-            images, labels, tag2idx = read_images_from_directory(self.config.images_dir,self.config.im_size)
+            images, labels, tag2idx = read_data(self.config.images_dir, self.config.im_size)
             logging.info('Images successfully read from the directory.')
 
-
-            
-
-            # Step 2: Save the raw images data
-            np.save(self.config.raw_data_path, images)
-            logging.info('Saved raw images data')
-
-            # Step 3: Split the data into training and testing sets
+            # Step 2: Split the data into training and testing sets
             train_images, test_images, train_labels, test_labels = train_test_split(
-                images, labels, test_size=self.config.test_split, stratify= labels, random_state=self.config.random_state )
+                images, labels, test_size=self.config.test_split, stratify=labels, random_state=self.config.random_state
+            )
             logging.info("Data successfully split into training and testing sets.")
 
-
-            # Step 4: Save the training and testing dataa
-            np.save(self.config.train_data_path, train_images)
-            np.save(self.config.test_data_path, test_images)
-            logging.info(f"Training image data saved at {self.config.train_data_path}")
-            logging.info(f"Testing image data saved at {self.config.test_data_path}")
+            # Step 3: Save the training and testing data
+            self.save_data(self.config.train_data_path, train_images, "training image data")
+            self.save_data(self.config.test_data_path, test_images, "testing image data")
 
             logging.info("Ingestion of the data is completed")
-
 
         except Exception as e:
             logging.error(f"An error occurred during data ingestion: {e}")

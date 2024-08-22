@@ -1,4 +1,5 @@
 matplotlib
+ensure
 numpy
 tqdm
 opencv-python
@@ -6,6 +7,9 @@ pandas
 tensorflow
 scikit-image
 scikit-learn
+pyyaml
+python-box
+Pathlib
 
  
 -e .

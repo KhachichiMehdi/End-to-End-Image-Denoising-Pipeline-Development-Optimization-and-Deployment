@@ -1,18 +1,32 @@
-import logging
 import os
+import sys
+import logging
 from datetime import datetime
 
-# Create a timestamped filename
-LOG_FILE = f"{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}.log"
+# Define the logging format
+logging_str = "[%(asctime)s - %(levelname)s - %(module)s - %(message)s]"
 
-# Define the directory and log file path
-logs_dir = os.path.join(os.getcwd(), "logs")
-os.makedirs(logs_dir, exist_ok=True)
-LOG_FILE_PATH = os.path.join(logs_dir, LOG_FILE)
+# Generate the log file name with the current date and time
+LOG_FILE = f"{datetime.now().strftime('%m-%d-%Y-%H-%M-%S')}.log"
 
-# Set up logging configuration
+# Define the directory where logs will be stored
+log_dir = os.path.join(os.getcwd(), "LOGS")
+
+# Ensure the log directory exists
+os.makedirs(log_dir, exist_ok=True)
+
+# Define the full log file path
+LOG_FILE_PATH = os.path.join(log_dir, LOG_FILE)
+
+# Configure the logging settings
 logging.basicConfig(
-    filename=LOG_FILE_PATH,
-    format="[ %(asctime)s ] %(lineno)d %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO,
+    format=logging_str,
+    handlers=[
+        logging.FileHandler(LOG_FILE_PATH),
+        logging.StreamHandler(sys.stdout)
+    ]
 )
+
+# Create a logger with a specific name
+logger = logging.getLogger("AUTOENCODERLOGGER")
