@@ -1,29 +1,25 @@
 from src.config.configurtion import Configuration
-from src.components.model_training import ModelTraining
-from src.components.model_callbacks import ModelCallback
+from src.components.model_evaluation import ModelEvaluation
 from src.utils.logger import logging
 from pathlib import Path
-STAGE_NAME  = " Model Training Stage"
+STAGE_NAME  = "Model Evaluation Stage"
 
-class ModelTrainingPipeline:
+class ModelEvaluationPipeline:
     def __init__(self) -> None:
         pass
 
     def main(self):
 
         config = Configuration(Path("config\config.yaml"),Path("params.yaml"))
-        get_config_data = config.get_training_config()
-        model_training= ModelTraining(get_config_data)
-        model_callbacks=ModelCallback()
-        callbacks_list=model_callbacks._get_callbacks()
-        model_training.get_base_model()
-        model_training.train(callbacks_list)
+        get_config_data = config.get_model_evaluation_config()
+        model_evaluation = ModelEvaluation(get_config_data)
+        model_evaluation.initiate_model_evaluation()
         
 if __name__ == "__main__":
     
     try:
         logging.info(f" >>>> stage {STAGE_NAME} <<<< started !")
-        obj = ModelTrainingPipeline()
+        obj = ModelEvaluationPipeline()
         obj.main()
         logging.info(f" >>>> stage {STAGE_NAME} <<<< Completed ! \n\n x==================x")
         
