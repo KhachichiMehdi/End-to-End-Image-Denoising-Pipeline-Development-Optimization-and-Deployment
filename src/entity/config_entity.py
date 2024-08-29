@@ -10,7 +10,6 @@ class DataIngestionConfig:
     Attributes:
         images_dir (list()): List of paths to directories containing images.
         root_dir (Path): The root directory for storing data.
-        raw_data_path (Path): Path to store raw image data in numpy format.
         train_data_path (Path): Path to store the training data.
         test_data_path (Path): Path to store the testing data.
         im_size (tuple): The size of the images to be processed (height, width).
@@ -40,8 +39,8 @@ class DataPreprocessingConfig:
         noise_factor (int): Factor by which noise is added to the data.
     """
     root_dir : Path
-    train_data : np.ndarray
-    test_data : np.ndarray
+    train_data_path : Path
+    test_data_path : Path
     x_train_noisy_path: Path
     x_test_noisy_path: Path
     noise_factor : int
@@ -62,7 +61,7 @@ class BaseModelConfig:
     root_dir: Path
     base_model_path: Path
     updated_base_model_path : Path
-    base_learning_rate : int
+    base_learning_rate : float
     input_shape: tuple
 
 
@@ -84,7 +83,7 @@ class TrainingConfig:
     """
     root_dir: Path
     train_model_path : Path
-    updated_model_base_path : Path
+    updated_model_base_path :Path
     train_data : np.ndarray
     test_data : np.ndarray
     x_train_noisy : np.ndarray
@@ -93,7 +92,13 @@ class TrainingConfig:
     batch_size: int
 @dataclass(frozen=True)
 class ModelEvaluationConfig:
-    pass
+    root_dir: Path
+    path_of_model: Path
+    evaluation_report_path:Path
+    X_test : np.ndarray
+    x_test_noisy : np.array
+
+    
 
 
 
