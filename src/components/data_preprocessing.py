@@ -3,11 +3,12 @@ warnings.filterwarnings("ignore")
 import numpy as np 
 import tensorflow as tf
 import sys
+from src.utils.common import read_numpy_file
 from src.entity.config_entity import DataPreprocessingConfig 
 from src.utils.logger import logging
 from src.utils.exception import CustomException
 from dataclasses import dataclass
-
+from pathlib import Path
 @dataclass
 class DataPreprocessing:
     """
@@ -29,8 +30,8 @@ class DataPreprocessing:
         This method is called automatically after the class is initialized and
         it triggers the data normalization and noise addition processes.
         """
-        self.train_data =self.config.train_data
-        self.test_data=self.config.test_data
+        self.train_data =read_numpy_file(self.config.train_data_path)
+        self.test_data=read_numpy_file(self.config.test_data_path)
 
         self._normalize_data()
         self._add_noise()
@@ -49,7 +50,9 @@ class DataPreprocessing:
             logging.info("Normalizing the data by scaling it to the range [0, 1].")
             self.train_data = self.train_data.astype("float32") / 255.0
             self.test_data = self.test_data.astype("float32") / 255.0
-            logging.info(f"Data normalization completed. Training data shape: {self.config.train_data.shape}, Testing data shape: {self.config.test_data.shape}")
+            logging.info(f"Data normalization completed. Training data shape: {self.train_data.shape}, Testing data shape: {self.test_data.shape}")
+            self.save_data(self.config.train_data_path, self.train_data, "training image with normalization")
+            self.save_data(self.config.test_data_path, self.test_data, "testing image data with normalization")
         except Exception as e:
             logging.error(f"An error occurred while normalizing the data: {e}")
             raise CustomException(e, sys)
@@ -67,8 +70,8 @@ class DataPreprocessing:
     
         try:
             logging.info(f"Adding noise to the data with a noise factor of {self.config.noise_factor}.")
-            x_train_noisy = self.train_data + self.config.noise_factor * tf.random.normal(shape=self.config.train_data.shape)
-            x_test_noisy = self.test_data + self.config.noise_factor * tf.random.normal(shape=self.config.test_data.shape)
+            x_train_noisy = self.train_data + self.config.noise_factor * tf.random.normal(shape=self.train_data.shape)
+            x_test_noisy = self.test_data + self.config.noise_factor * tf.random.normal(shape=self.test_data.shape)
             # Clipping to maintain pixel values in the range [0, 1]
             x_train_noisy = tf.clip_by_value(x_train_noisy, clip_value_min=0.0, clip_value_max=1.0)
             x_test_noisy = tf.clip_by_value(x_test_noisy, clip_value_min=0.0, clip_value_max=1.0)
@@ -87,4 +90,22 @@ class DataPreprocessing:
 
         except Exception as e:
             logging.error(f"An error occurred while adding noise to the data: {e}")
+            raise CustomException(e, sys)
+    def save_data(self, path: Path, data: np.ndarray, data_desc: str) -> None:
+        """
+        Save numpy array data to the specified path.
+
+        Args:
+            path (Path): Path to save the numpy file.
+            data (np.ndarray): Data to be saved.
+            data_desc (str): Description of the data being saved.
+
+        Raises:
+            CustomException: If the file cannot be saved due to permission errors.
+        """
+        try:
+            np.save(path, data)
+            logging.info(f"{data_desc} saved successfully at {path}")
+        except Exception as e:
+            logging.error(f"An error occurred while saving {data_desc}: {e}")
             raise CustomException(e, sys)

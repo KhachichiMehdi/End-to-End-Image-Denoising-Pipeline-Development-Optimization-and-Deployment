@@ -7,7 +7,9 @@ from sklearn.model_selection import train_test_split
 from src.entity.config_entity import DataIngestionConfig
 from src.utils.logger import logging
 from src.utils.exception import CustomException
-from src.utils.common import read_data
+from src.utils.common import read_data 
+from sklearn.utils import shuffle
+
 
 
 @dataclass
@@ -64,7 +66,7 @@ class DataIngestion:
 
             # Step 2: Split the data into training and testing sets
             train_images, test_images, train_labels, test_labels = train_test_split(
-                images, labels, test_size=self.config.test_split, stratify=labels, random_state=self.config.random_state
+                images, labels, test_size=self.config.test_split,shuffle=True, stratify=labels, random_state=self.config.random_state
             )
             logging.info("Data successfully split into training and testing sets.")
 

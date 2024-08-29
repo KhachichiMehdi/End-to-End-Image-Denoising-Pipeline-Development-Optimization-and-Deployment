@@ -82,7 +82,6 @@ class BaseModel:
             self.model = self.build_autoencoder()
             self.save_model(path=self.config.base_model_path, model=self.model)
             logging.info(f"Base model saved at {self.config.base_model_path}.")
-            logging.info(self.config.base_learning_rate)
         except Exception as e:
             logging.error(f"Error occurred while getting the base model: {e}")
             raise CustomException(e, sys)

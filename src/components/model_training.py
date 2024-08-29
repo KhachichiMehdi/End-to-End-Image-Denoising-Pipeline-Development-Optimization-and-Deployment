@@ -1,8 +1,14 @@
 import tensorflow as tf
 from pathlib import Path
 from ..entity.config_entity import TrainingConfig
+from dataclasses import dataclass
+from src.utils.exception import CustomException
+from ..utils.logger import logging
+import sys
+from sklearn.utils import shuffle
 
-class Training:
+@dataclass
+class ModelTraining:
     """
     Class for managing the training process of the autoencoder model.
 
@@ -15,7 +21,7 @@ class Training:
         model (tf.keras.Model): The autoencoder model instance to be trained.
     """
 
-    def __init__(self, configfile: TrainingConfig) -> None:
+    def __init__(self, config: TrainingConfig) -> None:
         """
         Initialize the Training class with a configuration file.
 
@@ -23,7 +29,7 @@ class Training:
             configfile (TrainingConfig): Configuration for the training process, 
             including paths to data, model, and training parameters.
         """
-        self.config = configfile
+        self.config = config
         self.model = None
 
     def get_base_model(self) -> None:
@@ -43,24 +49,7 @@ class Training:
             logging.error(f"Error occurred while loading the base model: {e}")
             raise CustomException(e, sys)
 
-    @staticmethod
-    def save_model(path: Path, model: tf.keras.Model) -> None:
-        """
-        Save the trained model to the specified path.
 
-        Args:
-            path (Path): The path where the trained model will be saved.
-            model (tf.keras.Model): The Keras model to be saved.
-
-        Raises:
-            Exception: If the model cannot be saved.
-        """
-        try:
-            model.save(path)
-            logging.info(f"Model saved successfully at {path}.")
-        except Exception as e:
-            logging.error(f"Error occurred while saving the model: {e}")
-            raise CustomException(e, sys)
 
     def train(self, callbacks_list: list) -> None:
         """
@@ -92,4 +81,24 @@ class Training:
             logging.info(f"Trained model saved at {self.config.train_model_path}.")
         except Exception as e:
             logging.error(f"Error occurred during training: {e}")
+            raise CustomException(e, sys)
+            
+    @staticmethod
+    def save_model(path: Path, model: tf.keras.Model):
+        """
+        Saves the given Keras model to the specified path.
+
+        Args:
+            path (Path): The path where the model will be saved.
+            model (tf.keras.Model): The Keras model to be saved.
+
+        Raises:
+            CustomException: If any errors occur during the model saving process.
+        """
+        try:
+            logging.info(f"Saving model to {path}.")
+            model.save(path)
+            logging.info(f"Model saved successfully at {path}.")
+        except Exception as e:
+            logging.error(f"Error occurred while saving the model: {e}")
             raise CustomException(e, sys)
