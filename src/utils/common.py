@@ -3,6 +3,9 @@ import cv2
 import yaml
 import sys
 import os
+import json
+import tensorflow as tf
+from tensorflow.keras.models import Model
 import numpy as np
 from tqdm import tqdm
 from glob import glob
@@ -35,7 +38,6 @@ def read_yaml(path_to_yaml: Path) -> ConfigBox:
             if not content:
                 raise BoxValueError("YAML file is empty")
             logging.info(f"YAML file loaded successfully from {path_to_yaml}")
-            logging.info(ConfigBox(content))
             return ConfigBox(content)
     except BoxValueError as e:
         logging.error(f"YAML file is empty: {path_to_yaml}")
@@ -132,5 +134,65 @@ def read_numpy_file(file_path: Path) -> np.ndarray:
     except Exception as e:
         logging.error(f"An error occurred while loading the file: {file_path}")
         raise CustomException(e, sys)
-    
-    
+
+@ensure_annotations  
+def save_json(path :Path, report : dict)->None:
+        try:
+            with open(path, "w") as f:
+                json.dump(report, f)
+        except Exception as e:
+            logging.error(f"Failed to save evaluation report: {e}")
+            raise CustomException(e, sys)
+@ensure_annotations
+def save_data(self, path: Path, data: np.ndarray, data_desc: str) -> None:
+        """
+        Save numpy array data to the specified path.
+
+        Args:
+            path (Path): Path to save the numpy file.
+            data (np.ndarray): Data to be saved.
+            data_desc (str): Description of the data being saved.
+
+        Raises:
+            CustomException: If the file cannot be saved due to permission errors.
+        """
+        try:
+            np.save(path, data)
+            logging.info(f"{data_desc} saved successfully at {path}")
+        except Exception as e:
+            logging.error(f"An error occurred while saving {data_desc}: {e}")
+            raise CustomException(e, sys)
+
+@ensure_annotations  
+def save_model(path: Path, model: tf.keras.Model)-> None:
+        """
+        Saves the given Keras model to the specified path.
+
+        Args:
+            path (Path): The path where the model will be saved.
+            model (tf.keras.Model): The Keras model to be saved.
+
+        Raises:
+            CustomException: If any errors occur during the model saving process.
+        """
+        try:
+            logging.info(f"Saving model to {path}.")
+            model.save(path)
+            logging.info(f"Model saved successfully at {path}.")
+            return None
+        except Exception as e:
+            logging.error(f"Error occurred while saving the model: {e}")
+            raise CustomException(e, sys)
+@ensure_annotations
+def load_model(path: Path ) -> tf.keras.Model :
+                    """
+                    Charge le modèle à partir du chemin spécifié dans la configuration.
+                    """
+                    try:
+                        logging.info(f"Loading model from {path}")
+                        model = tf.keras.models.load_model(path)
+                        logging.info("Model loaded successfully.")
+                        return model
+                    except Exception as e:
+                        logging.error(f"Failed to load the model: {e}")
+                        raise CustomException(e, sys)
