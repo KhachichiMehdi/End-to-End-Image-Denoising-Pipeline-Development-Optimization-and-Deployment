@@ -7,7 +7,6 @@ STAGE_NAME  = "Model Evaluation Stage"
 class ModelEvaluationPipeline:
     def __init__(self) -> None:
         pass
-
     def main(self):
 
         config = Configuration(Path("config\config.yaml"),Path("params.yaml"))
