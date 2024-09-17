@@ -10,6 +10,8 @@ scikit-learn
 pyyaml
 python-box
 Pathlib
-
+mlflow
+fastapi 
+uvicorn
  
 -e .
