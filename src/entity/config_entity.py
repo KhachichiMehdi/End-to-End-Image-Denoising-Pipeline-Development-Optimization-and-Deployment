@@ -97,6 +97,11 @@ class ModelEvaluationConfig:
     evaluation_report_path:Path
     X_test : np.ndarray
     x_test_noisy : np.array
+    num_epochs : int
+    batch_size : int
+    base_learning_rate : float
+    im_size : tuple
+
 
     
 

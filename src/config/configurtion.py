@@ -96,7 +96,12 @@ class Configuration:
             path_of_model= Path(self.get_training_config().train_model_path),
             evaluation_report_path = Path(model_evaluation.evaluation_report_path),
             X_test = read_numpy_file(Path(self.get_data_ingestion_config().test_data_path)),
-            x_test_noisy = read_numpy_file(Path(self.get_data_preprocessing_config().x_test_noisy_path))
+            x_test_noisy = read_numpy_file(Path(self.get_data_preprocessing_config().x_test_noisy_path)),
+            num_epochs = self.params.num_epochs,
+            batch_size = self.params.batch_size,
+            base_learning_rate = float(self.params.base_learning_rate),
+            im_size = tuple(list(self.params.im_size))
+
         )
         return model_evaluation_config
 
