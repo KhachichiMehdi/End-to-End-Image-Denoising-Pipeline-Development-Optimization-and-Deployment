@@ -74,6 +74,27 @@ def create_directories(paths: list, verbose=True):
 
 @ensure_annotations
 def read_data(path_list: list, im_size: tuple) -> tuple:
+    """
+    Reads image data from a list of directory paths, resizes the images, and assigns labels based on directory structure.
+
+    Parameters:
+    - path_list (list of str): List of directory paths containing images organized in subfolders by label.
+    - im_size (tuple of int): Target size for resizing images (width, height). Default is (256, 256).
+
+    Returns:
+    - X (numpy.ndarray): Array of resized images.
+    - y (numpy.ndarray): One-hot encoded labels corresponding to the images.
+    - tag2idx (dict): Dictionary mapping label names to numeric indices.
+
+    Steps:
+    1. Extracts unique labels from directory names and creates a label-to-index mapping.
+    2. Iterates through all images in the directories, reads, resizes, and converts them to arrays.
+    3. Handles errors gracefully, skipping files that are not valid images.
+
+    Example Usage:
+        path_list = ["data/class1/", "data/class2/"]
+        X, y, tag2idx = read_data(path_list, im_size=(128, 128))
+        """
     
     try:
         X = []
