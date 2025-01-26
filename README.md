@@ -31,7 +31,8 @@ As I am not permitted to share the specifics of my work during the internship, t
 
 ### **Core Objectives**
 - Design and train a **Convolutional Autoencoder (CAE)** to effectively denoise agricultural images.
-- Evaluate model performance using metrics like **MSE** 
+- Evaluate model performance using metrics like **MSE**
+- Optimization : find the optimal model 
 
 ### **MLOps Practices**
 1. **Versioning**: 
@@ -45,16 +46,15 @@ As I am not permitted to share the specifics of my work during the internship, t
 5. **Modularity and Maintainability**:
    - Structure the pipeline into modular components for data preprocessing, training, evaluation, and deployment.
 6. **Logging** :
-   - onitor the flow of your program.
+   - Monitor the flow of the program.
    - Capture key events, warnings, and errors.
    - Debug efficiently without relying on print statements.
    - Persist logs to files for long-term analysis.
-7. 
 ---
 
 ## **Pipeline Overview**
 
-1. ** Data Ingestion and  Preparation**:
+1. **Data Ingestion and  Preparation**:
    - Load, clean, and preprocess noisy and clean image datasets.
 
 2. **Model Training**:
@@ -62,7 +62,7 @@ As I am not permitted to share the specifics of my work during the internship, t
    - Automate hyperparameter tuning and logging using **MLflow**.
 
 3. ** Evaluation**:
-   - Evaluate the model's performance using MSE and Save it on json format.
+   - Evaluate the model's performance using MSE and save it on a json format.
    - Visualize sample results.
 
 4. **Deployment**:
@@ -111,7 +111,7 @@ This module defines data structures (entities) to encapsulate configurations log
 ## **Future Work**
 - Integrate **automated retraining** pipelines based on new agricultural datasets.
 - Extend the system to handle additional noise types and image resolutions.
-- Monitoring**: Log predictions and performance metrics in real time and set up alerts for model drift or degraded performance.
+- **Monitoring**: Log predictions and performance metrics in real time and set up alerts for model drift or degraded performance.
 - Explore advanced architectures, such as GANs, for denoising.
 
 ---
